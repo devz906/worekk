@@ -12,14 +12,40 @@ To build an IPA for a real device, add these in **GitHub → repo → Settings �
 |--------|-------------|
 | `DEVELOPER_TEAM_ID` | Apple Developer Team ID (10 characters, e.g. `ABCD123456`). Find it in [Apple Developer](https://developer.apple.com/account) → Membership. |
 | `CODE_SIGNING_IDENTITY` | Exact name of your iOS Distribution or Development certificate in Keychain, e.g. `"Apple Development: you@email.com (TEAM_ID)"` or `"iOS Distribution"`. |
-| `P12_BASE64` | Your signing certificate + private key exported as a `.p12` file, then Base64-encoded (no newlines): `openssl base64 -A -in Certificates.p12` |
+| `P12_BASE64` | Your signing certificate + private key as `.p12`, then Base64 **single line (no newlines)**. See “Fixing P12” below. |
 | `P12_PASSWORD` | Password you set when exporting the .p12. |
-| `MOBILEPROVISION_BASE64` | Your **iOS App Development** (or Ad Hoc) provisioning profile, Base64-encoded: `openssl base64 -A -in GameHub.mobileprovision` |
+| `MOBILEPROVISION_BASE64` | Your **iOS App Development** (or Ad Hoc) profile, Base64 **single line**. See below. |
 
 - **Development** profile: install on devices registered in your Apple Developer account (sideload, AltStore, StikJIT).
 - **Ad Hoc**: same but for TestFlight-style distribution to registered devices.
 
 After saving the secrets, run the workflow. When it finishes, open the run → **Artifacts** → download **GameHub-iPA** (contains `GameHub.ipa`).
+
+---
+
+### Fixing “P12 keys missing or in the wrong format”
+
+The action needs base64 **with no newlines** (one long line). If you used `base64 -i file` or `openssl base64 -in file` without `-A`, the string has line breaks and will fail.
+
+**1. Export .p12 from Mac:** Keychain Access → your **Apple Development** (or iOS Distribution) cert + its **private key** → right‑click → **Export 2 items** → save as `.p12` and set a password (`P12_PASSWORD`).
+
+**2. Encode as one line:**
+
+- **macOS/Linux:** `openssl base64 -A -in YourCert.p12`  
+  (The **`-A`** is required.)
+- **Windows PowerShell:**  
+  `[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\to\YourCert.p12"))`
+
+Copy the **entire** output.
+
+**3. GitHub secret:** Settings → Secrets → **P12_BASE64** → paste the full string. No leading/trailing spaces or newlines, no quotes.
+
+**4. Provisioning profile (same idea):**  
+- **macOS/Linux:** `openssl base64 -A -in GameHub.mobileprovision`  
+- **Windows:** `[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\to\GameHub.mobileprovision"))`  
+Create **MOBILEPROVISION_BASE64** and paste the full single-line output.
+
+---
 
 ### If you don’t set secrets
 

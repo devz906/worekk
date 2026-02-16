@@ -19,6 +19,20 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Check required secrets
+        run: |
+          missing=""
+          [ -z "${{ secrets.DEVELOPER_TEAM_ID }}" ] && missing="$missing DEVELOPER_TEAM_ID"
+          [ -z "${{ secrets.CODE_SIGNING_IDENTITY }}" ] && missing="$missing CODE_SIGNING_IDENTITY"
+          [ -z "${{ secrets.P12_BASE64 }}" ] && missing="$missing P12_BASE64"
+          [ -z "${{ secrets.P12_PASSWORD }}" ] && missing="$missing P12_PASSWORD"
+          [ -z "${{ secrets.MOBILEPROVISION_BASE64 }}" ] && missing="$missing MOBILEPROVISION_BASE64"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing or empty secrets:$missing. Add them in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "All required secrets are set. If the next step fails with 'P12 keys missing or in the wrong format', see BUILD_IPA.md (base64 must be single line, no newlines)."
+
       - name: Build and export IPA
         uses: yukiarrr/ios-build-action@v1.12.0
         with:
@@ -26,7 +40,6 @@ jobs:
           scheme: GameHub
           configuration: Release
           export-method: development
-          # Set these in repo Settings → Secrets and variables → Actions
           team-id: ${{ secrets.DEVELOPER_TEAM_ID }}
           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
           p12-base64: ${{ secrets.P12_BASE64 }}
