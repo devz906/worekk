@@ -4,12 +4,14 @@ GameHub-style app to run PC/Windows games in **BoxedWine-style containers** on i
 
 ## What’s in this repo
 
+- **GameHub.xcodeproj** – Xcode project; open it to build or run. **BUILD_IPA.md** – how to get an IPA (GitHub Actions or Xcode).
 - **PORT_PLAN.md** – Port plan and recommended stack: Wine, MoltenVK, DXVK, BoxedWine, JIT (StikJIT) for iPhone 16 Pro.
 - **GameHub/** – SwiftUI app:
   - **Games** tab: list and launch installed games (from containers).
   - **Containers** tab: import `boxedwine.zip` (or compatible container); path is stored for the future BoxedWine iOS runner.
   - **Settings** tab: JIT/StikJIT instructions and links (BoxedWine, MoltenVK).
 - **BOXEDWINE_INTEGRATION.md** – How to plug in your `boxedwine.zip` and the BoxedWine iOS port when ready.
+- **No manual Wine install:** like GamePiisii, the app will use a **bundled** ~200MB BoxedWine zip (Wine + minimal PC runtime); see BUILD_IPA.md.
 
 ## Target device
 
@@ -20,24 +22,10 @@ GameHub-style app to run PC/Windows games in **BoxedWine-style containers** on i
 
 ## Build and run (Xcode)
 
-1. Open Xcode and create a new **App** project:
-   - Product Name: **GameHub**
-   - Team: your Apple ID
-   - Organization Identifier: e.g. `com.yourname`
-   - Interface: **SwiftUI**
-   - Language: **Swift**
-   - Minimum deployment: **iOS 17.0** (to align with StikJIT-supported versions)
-
-2. Add the existing **GameHub** source files to the app target:
-   - `GameHubApp.swift`
-   - `Views/` (MainTabView, GameLibraryView, ContainerListView, SettingsView)
-   - `Models/` (GameEntry, GameContainer)
-   - `Services/ContainerManager.swift`
-
-3. Enable **File sharing** and **iCloud / Documents** if you want container files to be visible in Files:
-   - Target → **Signing & Capabilities** → add **iCloud** or use **File sharing** (UIFileSharingEnabled, LSSupportsOpeningDocumentsInPlace in Info.plist if needed).
-
-4. Build and run on a device (recommended: iPhone 16 Pro with JIT enabled via StikJIT).
+1. Open **GameHub.xcodeproj** in Xcode.
+2. Select your **Team** under **Signing & Capabilities** for the GameHub target.
+3. Choose your iPhone (or simulator) and run (**⌘R**).  
+For an **IPA** to sideload: **Product → Archive**, then **Distribute App**. Or use the **Build IPA** GitHub Action – see **BUILD_IPA.md**.
 
 ## Sideload and JIT (StikJIT)
 

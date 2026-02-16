@@ -1,0 +1,41 @@
+# Build GameHub and produce an IPA for sideloading (e.g. AltStore, StikJIT).
+# Requires repository secrets for code signing (see BUILD_IPA.md).
+# Without secrets the job will fail at "Build and export IPA"; build locally in Xcode instead.
+
+name: Build IPA
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build and export IPA
+        uses: yukiarrr/ios-build-action@v1.12.0
+        with:
+          project-path: GameHub.xcodeproj
+          scheme: GameHub
+          configuration: Release
+          export-method: development
+          # Set these in repo Settings → Secrets and variables → Actions
+          team-id: ${{ secrets.DEVELOPER_TEAM_ID }}
+          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+          p12-base64: ${{ secrets.P12_BASE64 }}
+          certificate-password: ${{ secrets.P12_PASSWORD }}
+          mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+          output-path: GameHub.ipa
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: GameHub-iPA
+          path: GameHub.ipa
