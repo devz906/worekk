@@ -2,7 +2,26 @@
 
 ## 1. IPA from GitHub Actions
 
-The **Build IPA** workflow runs on every push to `main` (and manually via **Actions → Build IPA → Run workflow**). It produces an IPA you can download from the run’s **Artifacts** (e.g. `GameHub-iPA`).
+The **Build IPA** workflow runs on every push to `main` (and manually via **Actions → Build IPA → Run workflow**).  
+- **If you haven’t added the 5 secrets:** the workflow still runs and only builds for simulator (no IPA, no failure).  
+- **After you add the secrets:** it will build and export an IPA and you can download it from the run’s **Artifacts** (e.g. `GameHub-iPA`).
+
+### Where to add the secrets
+
+1. Open your repo: **https://github.com/devz906/worekk**
+2. Click **Settings** (repo tabs).
+3. In the left sidebar, click **Secrets and variables** → **Actions**.
+4. Click **New repository secret** and add each of these (name exactly as below, value as described):
+
+| Secret name (exact) | What to put |
+|--------------------|-------------|
+| `DEVELOPER_TEAM_ID` | Your Apple Team ID (10 chars), e.g. from https://developer.apple.com/account → Membership details. |
+| `CODE_SIGNING_IDENTITY` | Full name of your cert in Keychain, e.g. `Apple Development: your@email.com (TEAMID)`. |
+| `P12_BASE64` | Single-line base64 of your .p12 file: `openssl base64 -A -in YourCert.p12` (see “Fixing P12” below). |
+| `P12_PASSWORD` | The password you set when exporting the .p12. |
+| `MOBILEPROVISION_BASE64` | Single-line base64 of your .mobileprovision: `openssl base64 -A -in GameHub.mobileprovision`. |
+
+After all five are saved, run **Actions → Build IPA → Run workflow** again; the run will produce the **GameHub-iPA** artifact.
 
 ### Required secrets (code signing)
 
