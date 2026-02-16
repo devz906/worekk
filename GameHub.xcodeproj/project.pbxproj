@@ -15,7 +15,6 @@
 		B10100000000000000000006 /* GameLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10100000000000000000006 /* GameLibraryView.swift */; };
 		B10100000000000000000007 /* ContainerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10100000000000000000007 /* ContainerListView.swift */; };
 		B10100000000000000000008 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10100000000000000000008 /* SettingsView.swift */; };
-		B10100000000000000000009 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F10100000000000000000009 /* Info.plist */; };
 		B1010000000000000000000A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1010000000000000000000A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -159,7 +158,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B10100000000000000000009 /* Info.plist in Resources */,
 				B1010000000000000000000A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
