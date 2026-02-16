@@ -1,4 +1,4 @@
-# Build GameHub. With secrets → IPA for device. Without secrets → build for simulator only (no failure).
+# Build GameHub and always produce an IPA. No secrets = ad-hoc build, zip to IPA (re-sign when sideloading). With secrets = fully signed IPA.
 
 name: Build IPA
 
@@ -24,10 +24,9 @@ jobs:
             echo "have_secrets=true" >> $GITHUB_OUTPUT
           else
             echo "have_secrets=false" >> $GITHUB_OUTPUT
-            echo "::notice::No code signing secrets. Building for simulator only. To get an IPA, add secrets (see BUILD_IPA.md)."
           fi
 
-      - name: Build and export IPA
+      - name: Build and export IPA (signed with your cert)
         if: steps.secrets.outputs.have_secrets == 'true'
         uses: yukiarrr/ios-build-action@v1.12.0
         with:
@@ -42,17 +41,29 @@ jobs:
           mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
           output-path: GameHub.ipa
 
-      - name: Upload IPA
+      - name: Build for device and package as IPA (no signing secrets)
+        if: steps.secrets.outputs.have_secrets == 'false'
+        run: |
+          xcodebuild -project GameHub.xcodeproj -scheme GameHub -configuration Release \
+            -destination 'generic/platform=iOS' -derivedDataPath build \
+            -UseModernBuildSystem=0 \
+            build \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/GameHub.app Payload/
+          zip -r GameHub.ipa Payload
+          echo "::notice::IPA is unsigned. Use AltStore, SideStore, or Sideloadly to install – they re-sign with your Apple ID."
+
+      - name: Upload IPA (signed)
         if: steps.secrets.outputs.have_secrets == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: GameHub-iPA
           path: GameHub.ipa
 
-      - name: Build for simulator (no signing)
+      - name: Upload IPA (unsigned – re-sign when sideloading)
         if: steps.secrets.outputs.have_secrets == 'false'
-        run: |
-          xcodebuild -project GameHub.xcodeproj -scheme GameHub -configuration Release \
-            -destination 'generic/platform=iOS Simulator' -derivedDataPath build \
-            build
-          echo "Build OK. Add the 5 secrets in repo Settings → Secrets and variables → Actions to get an IPA. See BUILD_IPA.md."
+        uses: actions/upload-artifact@v4
+        with:
+          name: GameHub-iPA
+          path: GameHub.ipa

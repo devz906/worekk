@@ -3,8 +3,8 @@
 ## 1. IPA from GitHub Actions
 
 The **Build IPA** workflow runs on every push to `main` (and manually via **Actions → Build IPA → Run workflow**).  
-- **If you haven’t added the 5 secrets:** the workflow still runs and only builds for simulator (no IPA, no failure).  
-- **After you add the secrets:** it will build and export an IPA and you can download it from the run’s **Artifacts** (e.g. `GameHub-iPA`).
+- **No secrets:** the workflow builds for device without signing and zips the app as **GameHub.ipa**. You get the **GameHub-iPA** artifact every time. Install it with **AltStore**, **SideStore**, or **Sideloadly** – they re-sign the IPA with your Apple ID, so you don’t need to add any secrets.  
+- **With the 5 secrets:** the workflow produces a fully signed IPA (same artifact name). Use that if you want an IPA already signed with your cert.
 
 ### Where to add the secrets
 
